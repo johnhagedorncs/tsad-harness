@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tsad-harness"
+version = "0.1.0"
+description = "A test harness for time-series anomaly detectors: known ground truth, measured blind spots, and controls for training-window artifacts."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "John Hagedorn" }]
+requires-python = ">=3.10"
+keywords = [
+    "anomaly-detection",
+    "time-series",
+    "benchmarking",
+    "condition-monitoring",
+    "evaluation",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "numpy>=1.23",
+    "scipy>=1.9",
+    "matplotlib>=3.6",
+]
+
+[project.optional-dependencies]
+mp = ["stumpy>=1.11"]
+dev = ["pytest>=7.4", "ruff>=0.4"]
+
+[project.scripts]
+tsadharness = "tsadharness.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/johnhagedorncs/tsad-harness"
+Issues = "https://github.com/johnhagedorncs/tsad-harness/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",   # line length is enforced by the formatter, not the linter
+    "B008",   # function calls in argument defaults are used for factory defaults
+    # Every zip() in this package is over sequences of provably equal length
+    # (a mask's run starts and stops; a fixed axes/panels pairing), so
+    # strict= would document an invariant that is already guaranteed locally.
+    "B905",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
